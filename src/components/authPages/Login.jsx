@@ -1,12 +1,22 @@
 // import React from 'react'
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const [name,setName] = useState("")
     const [Email,setEmail] = useState("")
     const [Pass,setPass] = useState("")
     const [header,setheader] = useState("Login")
+    const navigate = useNavigate();
+
+     useEffect(()=>{
+        const token = Cookies.get('UserTrialToken');
+        if(token){
+          navigate('/userPage');
+        }
+      },[])
     
 
     const handleLoginSubmit =async ()=>{
@@ -28,7 +38,14 @@ const Login = () => {
                       'Content-type': 'application/json; charset=UTF-8',
                     },
                   })
-                  console.log(res.json)
+                  const Data = await res.json()
+                  console.log(Data)
+                  const usertoken = Data?.user?._id
+                  Cookies.set('UserTrialToken', usertoken, { expires: 1 }); // Expires in 1 days
+                  if(res.ok){
+                    navigate('/userPage');
+                  }
+                 
             }else{
                 const res =  await fetch("http://localhost:3000/api/userActions", {
                     method: 'POST',
@@ -42,6 +59,9 @@ const Login = () => {
                     },
                   })
                   console.log(res.json)
+                  if(res.ok){
+                    navigate('/userPage');
+                  }
                
             }
           

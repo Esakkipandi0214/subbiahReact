@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const [userdata, setUsersData] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  useEffect(()=>{
+    const token = Cookies.get('UserTrialToken');
+    if(!token){
+      navigate('/');
+    }
+  },[])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +97,10 @@ const Login = () => {
   return (
     <div className="text-black bg-violet-300 h-[100vh] flex justify-center items-center">
       <div className="p-5 rounded-xl bg-white w-[80%]">
-        <h1 className="text-xl font-bold mb-4">User Details</h1>
+        <div className=" flex justify-between">  <h1 className="text-xl font-bold mb-4">User Details</h1> <AiOutlineDelete
+                      className="cursor-pointer text-red-600"
+                      onClick={() =>{Cookies.remove('UserTrialToken'); navigate('/');}}
+                    /></div>
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr>
